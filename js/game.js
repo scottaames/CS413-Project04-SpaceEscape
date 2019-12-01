@@ -1,10 +1,10 @@
 var config = {
   type: Phaser.WEBGL,
-  width: 800,
-  height: 800,
+  width: 480,
+  height: 640,
   parent: "gameport",
   backgroundColor: "black",
-  scene: [SceneMain, SceneStartMenu, SceneGameOver],
+  scene: [SceneStartMenu, SceneMain, SceneGameOver],
   pixelArt: true,
   roundPixels: true,
   physics: {

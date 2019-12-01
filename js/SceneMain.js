@@ -5,7 +5,8 @@ class SceneMain extends Phaser.Scene {
 
   preload() {
     // load background
-    this.load.image("map", "../assets/sprites/map.png");
+    this.load.image("background1", "../assets/sprites/sprBg0.png");
+    this.load.image("background2", "../assets/sprites/sprBg1.png");
 
     // load sprites
     this.load.image("pLaser", "../assets/sprites/laserPlayer.png");
@@ -33,22 +34,6 @@ class SceneMain extends Phaser.Scene {
     this.load.audio("explodeSnd1", "../assets/sounds/sndExplode0.wav");
     this.load.audio("explodeSnd2", "../assets/sounds/sndExplode1.wav");
     this.load.audio("laserSnd", "../assets/sounds/sndLaser.wav");
-
-    // load menu assets
-    this.load.image("playBtn", "../assets/buttons/sprBtnPlay.png");
-    this.load.image("playBtnHover", "../assets/buttons/sprBtnPlayHover.png");
-    this.load.image("playBtnDown", "../assets/buttons/sprBtnPlayDown.png");
-    this.load.image("restartBtn", "../assets/buttons/sprBtnRestart.png");
-    this.load.image(
-      "restartBtnHover",
-      "../assets/buttons/sprBtnRestartHover.png"
-    );
-    this.load.image(
-      "restartBtnDown",
-      "../assets/buttons/sprBtnRestartDown.png"
-    );
-    this.load.audio("btnHoverSnd", "../assets/sounds/sndBtnOver.wav");
-    this.load.audio("btnDownSnd", "../assets/sounds/sndBtnDown.wav");
   }
 
   create() {
@@ -88,16 +73,13 @@ class SceneMain extends Phaser.Scene {
       laser: this.sound.add("laserSnd")
     };
 
-    // add background
-    this.map = this.add.tileSprite(
-      0,
-      0,
-      this.game.config.width,
-      this.game.config.height,
-      "map"
-    );
-    this.map.setOrigin(0, 0);
-    this.map.setScale(1);
+    this.backgrounds = [];
+    for (var i = 0; i < 5; i++) {
+      var keys = ["background1", "background2"];
+      var key = keys[Phaser.Math.Between(0, keys.length - 1)];
+      var bg = new ScrollingBackground(this, key, i * 10);
+      this.backgrounds.push(bg);
+    }
 
     this.player = new Player(
       this,
@@ -118,8 +100,6 @@ class SceneMain extends Phaser.Scene {
     this.down = this.input.keyboard.addKey("S");
     this.left = this.input.keyboard.addKey("A");
     this.right = this.input.keyboard.addKey("D");
-    this.turnRight = this.input.keyboard.addKey("LEFT");
-    this.turnLeft = this.input.keyboard.addKey("RIGHT");
     this.fire = this.input.keyboard.addKey("SPACE");
 
     this.enemies = this.add.group();
@@ -135,6 +115,7 @@ class SceneMain extends Phaser.Scene {
     ) {
       if (!player.getData("isDead") && !enemy.getData("isDead")) {
         player.explode(false);
+        player.onDestroy();
         enemy.explode(true);
       }
     });
@@ -145,6 +126,7 @@ class SceneMain extends Phaser.Scene {
     ) {
       if (!player.getData("isDead") && !laser.getData("isDead")) {
         player.explode(false);
+        player.onDestroy();
         laser.destroy();
       }
     });
@@ -192,6 +174,12 @@ class SceneMain extends Phaser.Scene {
   }
 
   update() {
+    // scroll background
+    for (var i = 0; i < this.backgrounds.length; i++) {
+      this.backgrounds[i].update();
+    }
+
+    // player movement
     if (!this.player.getData("isDead")) {
       this.player.update();
       if (this.up.isDown) {
@@ -215,8 +203,6 @@ class SceneMain extends Phaser.Scene {
         this.player.setData("isShooting", false);
       }
     }
-
-    this.map.tilePositionY -= 0.5;
 
     for (var i = 0; i < this.enemies.getChildren().length; i++) {
       var enemy = this.enemies.getChildren()[i];
