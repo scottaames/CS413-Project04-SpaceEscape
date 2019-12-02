@@ -6,6 +6,7 @@ class Entity extends Phaser.GameObjects.Sprite {
     this.scene.physics.world.enableBody(this, 0);
     this.setData("type", type);
     this.setData("isDead", false);
+    this.difficulty = this.scene.difficulty;
   }
 
   explode(canDestroy) {
@@ -48,12 +49,12 @@ class Entity extends Phaser.GameObjects.Sprite {
 class Player extends Entity {
   constructor(scene, x, y, key) {
     super(scene, x, y, key, "Player");
-    this.setData("speed", 200);
+    this.setData("speed", 600 / (this.difficulty / 2));
     this.play("player");
     this.setData("isShooting", false);
-    this.setData("timerShootDelay", 10);
+    this.setData("timerShootDelay", 5 + this.difficulty);
     this.setData("timerShootTick", this.getData("timerShootDelay") - 1);
-    this.setScale(1.5);
+    this.setScale(0.4 * this.difficulty);
     this.setFlipY(true);
   }
 
@@ -78,7 +79,24 @@ class Player extends Entity {
       // go to game over scene
       delay: 1000,
       callback: function() {
-        this.scene.scene.start("SceneGameOver");
+        this.scene.scene.start("SceneGameOver", {
+          difficulty: this.difficulty + 2,
+          hasWon: false
+        });
+      },
+      callbackScope: this,
+      loop: false
+    });
+  }
+
+  onWin() {
+    this.scene.time.addEvent({
+      delay: 1000,
+      callback: function() {
+        this.scene.scene.start("SceneGameOver", {
+          difficulty: this.difficulty + 2,
+          hasWon: true
+        });
       },
       callbackScope: this,
       loop: false
@@ -109,15 +127,15 @@ class Player extends Entity {
 class PlayerLaser extends Entity {
   constructor(scene, x, y) {
     super(scene, x, y, "pLaser");
-    this.body.velocity.y = -200;
-    this.setScale(1.25);
+    this.body.velocity.y = -600 / (this.difficulty / 2);
+    this.setScale(this.scene.player.scaleX);
   }
 }
 
 class EnemyLaser extends Entity {
   constructor(scene, x, y) {
     super(scene, x, y, "eLaser");
-    this.body.velocity.y = 200;
+    this.body.velocity.y = 25 * this.difficulty;
   }
 }
 
@@ -126,7 +144,7 @@ class EnemyChaser extends Entity {
     super(scene, x, y, "enemy", "EnemyChaser");
     this.body.velocity.y = Phaser.Math.Between(50, 100);
     this.shootTimer = this.scene.time.addEvent({
-      delay: Phaser.Math.Between(750, 1500),
+      delay: Phaser.Math.Between(3000, 4000) / (this.difficulty / 2),
       callback: function() {
         var laser = new EnemyLaser(this.scene, this.x, this.y);
         laser.setScale(this.scaleX);
@@ -148,6 +166,8 @@ class EnemyChaser extends Entity {
       if (this.shootTimer) {
         this.shootTimer.remove(false);
       }
+      super.explode(true);
+      this.scene.currScore += 1;
     }
   }
 
@@ -170,12 +190,12 @@ class EnemyChaser extends Entity {
 
         var angle = Math.atan2(dy, dx);
 
-        var speed = 100;
+        var speed = 25 * this.difficulty;
         this.body.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed);
-        if (this.x < this.scene.player.x) {
-          this.setFlipY(false);
+        if (this.y > this.scene.player.x) {
+          this.angle = angle;
         } else {
-          this.setFlipY(true);
+          this.angle = angle;
         }
       }
     }
@@ -186,7 +206,16 @@ class EnemySpawner extends Entity {
   constructor(scene, x, y) {
     super(scene, x, y, "spawner", "EnemySpawner");
     this.play("spawner");
-    this.setScale(1.2);
+    this.health = this.difficulty;
+  }
+
+  onDestroy() {
+    if (this.health <= 0) {
+      this.scene.currScore += this.difficulty;
+      super.explode(true);
+    } else {
+      this.health -= 1;
+    }
   }
 }
 

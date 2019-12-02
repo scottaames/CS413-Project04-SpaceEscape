@@ -3,6 +3,10 @@ class SceneMain extends Phaser.Scene {
     super({ key: "SceneMain" });
   }
 
+  init(data) {
+    this.difficulty = data.difficulty;
+  }
+
   preload() {
     // load background
     this.load.image("background1", "../assets/sprites/sprBg0.png");
@@ -74,10 +78,10 @@ class SceneMain extends Phaser.Scene {
     };
 
     this.backgrounds = [];
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 4; i++) {
       var keys = ["background1", "background2"];
       var key = keys[Phaser.Math.Between(0, keys.length - 1)];
-      var bg = new ScrollingBackground(this, key, i * 10);
+      var bg = new ScrollingBackground(this, key, i * 7);
       this.backgrounds.push(bg);
     }
 
@@ -88,26 +92,18 @@ class SceneMain extends Phaser.Scene {
       "player"
     );
 
-    this.spawnerTopLeft = new EnemySpawner(this, 40, 40);
-    this.spawnerTopRight = new EnemySpawner(
-      this,
-      this.game.config.width - 40,
-      40
-    );
-
     // keyboard controls
     this.up = this.input.keyboard.addKey("W");
     this.down = this.input.keyboard.addKey("S");
     this.left = this.input.keyboard.addKey("A");
     this.right = this.input.keyboard.addKey("D");
+    /*     this.turnRight = this.input.keyboard.addKey("RIGHT");
+    this.turnLeft = this.input.keyboard.addKey("LEFT"); */
     this.fire = this.input.keyboard.addKey("SPACE");
 
     this.enemies = this.add.group();
     this.enemyLasers = this.add.group();
     this.playerLasers = this.add.group();
-
-    this.enemies.add(this.spawnerTopLeft);
-    this.enemies.add(this.spawnerTopRight);
 
     this.physics.add.overlap(this.player, this.enemies, function(
       player,
@@ -131,8 +127,20 @@ class SceneMain extends Phaser.Scene {
       }
     });
 
+    for (var i = 1; i < this.difficulty; i++) {
+      var spacing =
+        (i * (this.game.config.width / this.difficulty)) %
+        this.game.config.width;
+      var row = Phaser.Math.Between(1, this.difficulty - 1);
+      var enemy = new EnemySpawner(this, spacing, 40 * row);
+      if (enemy !== null) {
+        enemy.setScale(Phaser.Math.Between(10, 20) * 0.1);
+        this.enemies.add(enemy);
+      }
+    }
+
     this.time.addEvent({
-      delay: 1000,
+      delay: 3500 / this.difficulty,
       callback: function() {
         var enemy = new EnemyChaser(
           this,
@@ -156,10 +164,26 @@ class SceneMain extends Phaser.Scene {
         if (enemy.onDestroy !== undefined) {
           enemy.onDestroy();
         }
-        enemy.explode(true);
         playerLaser.destroy();
       }
     });
+
+    this.currScore = 0;
+    this.scoreToWin = 5 * this.difficulty;
+    this.timer = this.add
+      .text(
+        this.game.config.width - 5,
+        this.game.config.height,
+        "Score: " + this.currScore + "/" + this.scoreToWin,
+        {
+          fontFamily: "monospace",
+          fontSize: 16,
+          fontStyle: "bold",
+          color: "beige",
+          align: "right"
+        }
+      )
+      .setOrigin(1);
   }
 
   getEnemiesByType(type) {
@@ -179,14 +203,22 @@ class SceneMain extends Phaser.Scene {
       this.backgrounds[i].update();
     }
 
+    this.timer.text = "Score: " + this.currScore + "/" + this.scoreToWin;
+
+    if (this.currScore >= this.scoreToWin && !this.player.getData("isDead")) {
+      this.player.onWin();
+    }
+
     // player movement
     if (!this.player.getData("isDead")) {
       this.player.update();
+
       if (this.up.isDown) {
         this.player.moveUp();
       } else if (this.down.isDown) {
         this.player.moveDown();
       }
+
       if (this.left.isDown) {
         this.player.moveLeft();
       } else if (this.right.isDown) {

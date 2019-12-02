@@ -5,25 +5,72 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700i&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Shadows+Into+Light&display=swap"
+      rel="stylesheet"
+    />
+
     <title>Project04: Final Project</title>
+    <style media="screen" type="text/css">
+      @font-face {
+        font-family: roboto;
+        src: url("./assets/font/RobotoMono-Regular.ttf");
+        font-weight: 400;
+        font-weight: normal;
+      }
+    </style>
 
     <style>
       body {
-        background: darkblue;
+        background: rgba(0, 0, 0, 0.954);
+        background-image: url("https://www.jpl.nasa.gov/spaceimages/images/largesize/PIA23002_hires.jpg");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        height: 100%;
         margin: 0;
         text-align: center;
         padding: 0;
-        color: white;
+        font-family: "Shadows Into Light", cursive;
+        color: #44d7b6;
+      }
+      h1,
+      h2 {
+        font-family: "Shadows Into Light", cursive;
+        font-weight: bolder;
+        font-size: 2.5em;
+      }
+      p {
+        color: aqua;
+        font-family: "Shadows Into Light", cursive;
+        font-size: 1.5em;
+      }
+      #gameport {
+        max-width: 1900px;
+        max-height: 1200px;
+        margin: 0 auto;
       }
     </style>
   </head>
 
   <body>
-    <h1>SPACE ESCAPE</h1>
+    <div
+      style="font-family:roboto; position:absolute; left:-1000px; visibility:hidden;"
+    >
+      .
+    </div>
+    <h1 style="font-size:72px;">Space Escape</h1>
     <div id="gameport"></div>
     <script type="text/javascript" src="js/phaser.min.js"></script>
     <script type="text/javascript" src="js/SceneMain.js"></script>
+    <script type="text/javascript" src="js/SceneInstructions.js"></script>
+    <script type="text/javascript" src="js/SceneDifficulty.js"></script>
     <script type="text/javascript" src="js/SceneStartMenu.js"></script>
+    <script type="text/javascript" src="js/SceneCredits.js"></script>
     <script type="text/javascript" src="js/SceneGameOver.js"></script>
     <script type="text/javascript" src="js/Entities.js"></script>
     <script type="text/javascript" src="js/game.js"></script>
@@ -31,7 +78,7 @@
     <h2>Instructions</h2>
 
     <!-- TODO: add instructions -->
-    <p>INSTRUCTIONS HERE</p>
+    <p>Instructions are located within the game, at the starting menu.</p>
 
     <h2>Comments</h2>
     <div id="disqus_thread"></div>

@@ -1,10 +1,17 @@
-var config = {
+const config = {
   type: Phaser.WEBGL,
-  width: 480,
-  height: 640,
+  width: 1024,
+  height: 768,
   parent: "gameport",
   backgroundColor: "black",
-  scene: [SceneStartMenu, SceneMain, SceneGameOver],
+  scene: [
+    SceneStartMenu,
+    SceneDifficulty,
+    SceneInstructions,
+    SceneCredits,
+    SceneMain,
+    SceneGameOver
+  ],
   pixelArt: true,
   roundPixels: true,
   physics: {
@@ -16,4 +23,4 @@ var config = {
   autofocus: true
 };
 
-var game = new Phaser.Game(config);
+const game = new Phaser.Game(config);

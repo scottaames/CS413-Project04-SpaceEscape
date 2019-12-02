@@ -1,6 +1,6 @@
 class SceneStartMenu extends Phaser.Scene {
   constructor() {
-    super({ key: "SceneMainMenu" });
+    super({ key: "SceneStartMenu" });
   }
 
   preload() {
@@ -10,18 +10,28 @@ class SceneStartMenu extends Phaser.Scene {
 
     // load menu assets
     this.load.image("title", "../assets/sprites/title.png");
-    this.load.image("playBtn", "../assets/buttons/sprBtnPlay.png");
-    this.load.image("playBtnHover", "../assets/buttons/sprBtnPlayHover.png");
-    this.load.image("playBtnDown", "../assets/buttons/sprBtnPlayDown.png");
-    this.load.image("restartBtn", "../assets/buttons/sprBtnRestart.png");
+    this.load.image("startBtn", "../assets/buttons/startBtn@2x.png");
+    this.load.image("startBtnHover", "../assets/buttons/startBtnHover@2x.png");
+    this.load.image("startBtnDown", "../assets/buttons/startBtnDown@2x.png");
+    this.load.image("creditsBtn", "../assets/buttons/creditsBtn@2x.png");
     this.load.image(
-      "restartBtnHover",
-      "../assets/buttons/sprBtnRestartHover.png"
+      "creditsBtnHover",
+      "../assets/buttons/creditsBtnHover@2x.png"
     );
     this.load.image(
-      "restartBtnDown",
-      "../assets/buttons/sprBtnRestartDown.png"
+      "creditsBtnDown",
+      "../assets/buttons/creditsBtnDown@2x.png"
     );
+    this.load.image("instructBtn", "../assets/buttons/instructBtn@2x.png");
+    this.load.image(
+      "instructBtnHover",
+      "../assets/buttons/instructBtnHover@2x.png"
+    );
+    this.load.image(
+      "instructBtnDown",
+      "../assets/buttons/instructBtnDown@2x.png"
+    );
+
     this.load.audio("btnHoverSnd", "../assets/sounds/sndBtnOver.wav");
     this.load.audio("btnDownSnd", "../assets/sounds/sndBtnDown.wav");
   }
@@ -32,53 +42,134 @@ class SceneStartMenu extends Phaser.Scene {
       btnDownSnd: this.sound.add("btnDownSnd")
     };
 
-    this.playBtn = this.add
+    this.startBtn = this.add
       .sprite(
         this.game.config.width * 0.5,
         this.game.config.height * 0.5,
-        "playBtn"
+        "startBtn"
       )
       .setInteractive();
 
-    this.playBtn.on(
+    this.startBtn.on(
       "pointerover",
       function() {
-        this.playBtn.setTexture("playBtnHover"); // set the button texture to sprBtnPlayHover
+        this.startBtn.setTexture("startBtnHover"); // set the button texture to sprBtnPlayHover
         this.sfx.btnHoverSnd.play(); // play the button over sound
       },
       this
     );
 
-    this.playBtn.on("pointerout", function() {
-      this.setTexture("playBtn");
+    this.startBtn.on("pointerout", function() {
+      this.setTexture("startBtn");
     });
 
-    this.playBtn.on(
+    this.startBtn.on(
       "pointerdown",
       function() {
-        this.playBtn.setTexture("playBtnDown");
+        this.startBtn.setTexture("startBtnDown");
         this.sfx.btnDownSnd.play();
       },
       this
     );
 
-    this.playBtn.on(
+    this.startBtn.on(
       "pointerup",
       function() {
-        this.playBtn.setTexture("playBtn");
-        this.scene.start("SceneMain");
+        this.startBtn.setTexture("startBtn");
+        this.scene.start("SceneDifficulty");
       },
       this
     );
 
-    this.title = this.add.image(this.game.config.width / 2, 250, "title");
-    this.title.setCrop(0, 0, this.title.width, this.title.height / 2);
+    this.instructBtn = this.add
+      .sprite(
+        this.startBtn.x,
+        this.startBtn.y + this.startBtn.height * 1.2,
+        "instructBtn"
+      )
+      .setInteractive();
+
+    this.instructBtn.on(
+      "pointerover",
+      function() {
+        this.instructBtn.setTexture("instructBtnHover"); // set the button texture to sprBtnPlayHover
+        this.sfx.btnHoverSnd.play(); // play the button over sound
+      },
+      this
+    );
+
+    this.instructBtn.on("pointerout", function() {
+      this.setTexture("instructBtn");
+    });
+
+    this.instructBtn.on(
+      "pointerdown",
+      function() {
+        this.instructBtn.setTexture("instructBtnDown");
+        this.sfx.btnDownSnd.play();
+      },
+      this
+    );
+
+    this.instructBtn.on(
+      "pointerup",
+      function() {
+        this.instructBtn.setTexture("startBtn");
+        this.scene.start("SceneInstructions");
+      },
+      this
+    );
+
+    this.creditsBtn = this.add
+      .sprite(
+        this.startBtn.x,
+        this.instructBtn.y + this.instructBtn.height * 1.2,
+        "creditsBtn"
+      )
+      .setInteractive();
+
+    this.creditsBtn.on(
+      "pointerover",
+      function() {
+        this.creditsBtn.setTexture("creditsBtnHover"); // set the button texture to sprBtnPlayHover
+        this.sfx.btnHoverSnd.play(); // play the button over sound
+      },
+      this
+    );
+
+    this.creditsBtn.on("pointerout", function() {
+      this.setTexture("creditsBtn");
+    });
+
+    this.creditsBtn.on(
+      "pointerdown",
+      function() {
+        this.creditsBtn.setTexture("creditsBtnDown");
+        this.sfx.btnDownSnd.play();
+      },
+      this
+    );
+
+    this.creditsBtn.on(
+      "pointerup",
+      function() {
+        this.creditsBtn.setTexture("creditsBtn");
+        this.scene.start("SceneCredits");
+      },
+      this
+    );
+
+    this.title = this.add.image(
+      this.game.config.width / 2,
+      this.game.config.height * 0.2,
+      "title"
+    );
 
     this.backgrounds = [];
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 4; i++) {
       var keys = ["background1", "background2"];
       var key = keys[Phaser.Math.Between(0, keys.length - 1)];
-      var bg = new ScrollingBackground(this, key, i * 10);
+      var bg = new ScrollingBackground(this, key, i * 7);
       this.backgrounds.push(bg);
     }
   }
