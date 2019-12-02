@@ -127,12 +127,10 @@ class SceneMain extends Phaser.Scene {
       }
     });
 
-    for (var i = 1; i < this.difficulty; i++) {
-      var spacing =
-        (i * (this.game.config.width / this.difficulty)) %
-        this.game.config.width;
-      var row = Phaser.Math.Between(1, this.difficulty - 1);
-      var enemy = new EnemySpawner(this, spacing, 40 * row);
+    for (var i = 1; i <= this.difficulty; i++) {
+      var x = Phaser.Math.Between(50, this.game.config.width - 50);
+      var y = Phaser.Math.Between(40, 250);
+      var enemy = new EnemySpawner(this, x, y, this.difficulty).setOrigin(0.5);
       if (enemy !== null) {
         enemy.setScale(Phaser.Math.Between(10, 20) * 0.1);
         this.enemies.add(enemy);
@@ -156,7 +154,7 @@ class SceneMain extends Phaser.Scene {
       loop: true
     });
 
-    this.physics.add.collider(this.playerLasers, this.enemies, function(
+    this.physics.add.overlap(this.playerLasers, this.enemies, function(
       playerLaser,
       enemy
     ) {
@@ -169,17 +167,17 @@ class SceneMain extends Phaser.Scene {
     });
 
     this.currScore = 0;
-    this.scoreToWin = 5 * this.difficulty;
+    this.scoreToWin = 6 * this.difficulty;
     this.timer = this.add
       .text(
         this.game.config.width - 5,
         this.game.config.height,
-        "Score: " + this.currScore + "/" + this.scoreToWin,
+        "SCORE\n" + this.currScore + "/" + this.scoreToWin,
         {
-          fontFamily: "monospace",
-          fontSize: 16,
+          fontFamily: "roboto",
+          fontSize: 28,
           fontStyle: "bold",
-          color: "beige",
+          color: "yellow",
           align: "right"
         }
       )
@@ -203,7 +201,7 @@ class SceneMain extends Phaser.Scene {
       this.backgrounds[i].update();
     }
 
-    this.timer.text = "Score: " + this.currScore + "/" + this.scoreToWin;
+    this.timer.text = "SCORE\n" + this.currScore + "/" + this.scoreToWin;
 
     if (this.currScore >= this.scoreToWin && !this.player.getData("isDead")) {
       this.player.onWin();

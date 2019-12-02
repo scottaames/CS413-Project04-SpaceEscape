@@ -143,9 +143,9 @@ class SceneGameOver extends Phaser.Scene {
         color: "#2a786a",
         align: "center"
       });
-      this.title2.setText("What are you\nwaiting for?");
+      this.title2.setText("What are you waiting for?");
       this.title2.setStyle({
-        fontSize: 38,
+        fontSize: 42,
         fontStyle: ""
       });
     }
